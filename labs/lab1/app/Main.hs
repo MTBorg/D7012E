@@ -1,12 +1,21 @@
-import           Prelude                 hiding ( sum )
+-- Martin Terneborg, termar-5
+import           Prelude                 hiding ( sum
+                                                , take
+                                                )
 
 sum = foldr (+) 0
+take n [] = []
+take n (x : xs) | n <= 0 || null xs = []
+                | otherwise         = x : take (n - 1) xs
 
+-- Find all sublists containing the first element of the list
 subL :: [Int] -> [(Int, Int, [Int])]
 subL (x : xs)
     | null xs   = [(0, 0, [x])]
     | otherwise = (0, 0, [x]) : map (\(i, j, l) -> (i, j + 1, x : l)) (subL xs)
 
+-- Returns a tuple where the first and second element are the start and end 
+-- indices of the sublists, and the third element is the sublist itself.
 allSubLists :: [Int] -> [(Int, Int, [Int])]
 allSubLists [] = []
 allSubLists (x : xs)
@@ -20,6 +29,7 @@ toStrings = map
         show s ++ "\t" ++ show i ++ "\t" ++ show j ++ "\t" ++ show l ++ "\n"
     )
 
+-- Insertion sort
 sortSets :: [(Int, Int, [Int], Int)] -> [(Int, Int, [Int], Int)]
 sortSets []       = []
 sortSets (x : xs) = insert x (sortSets xs)
@@ -34,8 +44,8 @@ smallestKSets k [] = error "Empty list given an as argument"
 smallestKSets k xs = header ++ foldr (++) "" (toStrings (take k sortedSets))
   where
     header     = "size\ti\tj\tsublist\n"
-    sortedSets = sortSets
-        (map (\(i, j, list) -> (i, j, list, sum list)) (allSubLists xs))
+    sortedSets = sortSets summedSets
+    summedSets = map (\(i, j, list) -> (i, j, list, sum list)) (allSubLists xs)
 
 testCase1Set = [ x * (-1) ^ x | x <- [1 .. 100] ]
 testCase1k = 15
@@ -48,5 +58,4 @@ main :: IO ()
 -- main = putStrLn (smallestKSets 5 [3, -4, 2, 1])
 -- main = putStrLn (smallestKSets testCase1k testCase1Set)
 -- main = putStrLn (smallestKSets testCase2k testCase2Set)
--- main = putStrLn (smallestKSets testCase3k testCase3Set)
-main = putStrLn (smallestKSets 4 [])
+main = putStrLn (smallestKSets testCase3k testCase3Set)
