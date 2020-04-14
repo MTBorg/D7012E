@@ -8,6 +8,7 @@ subL (x : xs)
     | otherwise = (0, 0, [x]) : map (\(i, j, l) -> (i, j + 1, x : l)) (subL xs)
 
 allSubLists :: [Int] -> [(Int, Int, [Int])]
+allSubLists [] = []
 allSubLists (x : xs)
     | null xs = [(0, 0, [x])]
     | otherwise =  subL (x : xs)
@@ -29,6 +30,7 @@ sortSets (x : xs) = insert x (sortSets xs)
     insert x [] = [x]
 
 smallestKSets :: Int -> [Int] -> String
+smallestKSets k [] = error "Empty list given an as argument"
 smallestKSets k xs = header ++ foldr (++) "" (toStrings (take k sortedSets))
   where
     header     = "size\ti\tj\tsublist\n"
@@ -46,4 +48,5 @@ main :: IO ()
 -- main = putStrLn (smallestKSets 5 [3, -4, 2, 1])
 -- main = putStrLn (smallestKSets testCase1k testCase1Set)
 -- main = putStrLn (smallestKSets testCase2k testCase2Set)
-main = putStrLn (smallestKSets testCase3k testCase3Set)
+-- main = putStrLn (smallestKSets testCase3k testCase3Set)
+main = putStrLn (smallestKSets 4 [])
