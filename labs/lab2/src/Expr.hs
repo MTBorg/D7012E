@@ -11,15 +11,25 @@ data EXPR = Const Int
 parse :: String -> EXPR
 parse = fst . buildexpr
   where
+    -- Return whether or not p evaluates to false using the first element of 
+    -- a list.
     notfirst p (_,[]) = True
     notfirst p (_,x:xs) = not (p x)
     
+    -- Build a number by extracting the leading digits from a given string. 
+    -- Also returns the remaining string as the second element of the tuple.
+    -- E.g. "123abc456 -> (Const "123", "abc456")
     buildnumber :: String -> (EXPR,String)
     buildnumber xs = until (notfirst isDigit) accdigits (Const 0, xs)
       where
+        -- Add the value of the first character in the string to the given
+        -- expression value. E.g. (Const 10, "72abc") -> (Const 107, "2abc")
         accdigits :: (EXPR,String) -> (EXPR,String)
         accdigits (Const n, y:ys) = (Const(10*n+(ord y - 48)), ys)
     
+    -- Build a variable by extracting the leading non-numeric characters from a
+    -- given string. Also returns the remaining string as the second element of
+    -- the tuple. E.g. "myvar123abc" -> (Var myvar, "123abc")
     buildvar :: String -> (EXPR,String)
     buildvar xs = until (notfirst isLetter) accletters (Var "", xs)
       where
