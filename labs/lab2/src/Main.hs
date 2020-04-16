@@ -1,6 +1,6 @@
-module Main where 
+module Main where
 
-import Expr
+import           Expr
 
 main :: IO ()
-main = putStrLn "hello"
+main = print (unparse (simplify (diff (Var "x") (parse "exp(sin(2*x))"))))
