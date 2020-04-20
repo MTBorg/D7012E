@@ -125,3 +125,13 @@ simplify (App a e) = App a (simplify e)
 
 mkfun :: (EXPR, EXPR) -> (Float -> Float)
 mkfun (body, var) arg = eval body [(unparse var, arg)]
+
+findzero :: String -> String -> Float -> Float
+findzero s1 s2 = fz var f f'
+  where
+    var = parse s1
+    f   = mkfun (parse s2, var)
+    f'  = mkfun (diff var (parse s2), var)
+    fz var f f' x0 | abs (guess - x0) <= 0.0001 = guess
+                   | otherwise                  = fz var f f' guess
+        where guess = x0 - f x0 / f' x0
