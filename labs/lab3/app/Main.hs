@@ -1,23 +1,25 @@
 module Main where
 
-import           Parser
-import           Expr
 import           Dictionary
+import           Statement
 
 d :: Dictionary.T String Integer
-d = Dictionary.insert ("a", 3) Dictionary.empty
+d = Dictionary.insert ("a", 9) Dictionary.empty
 
+-- Should print 11, 13 and whatever you pass to it + 5
+whileLoop :: [Statement.T]
+whileLoop =
+    [ Statement.fromString "read n;"
+    , Statement.fromString "a:=2;"
+    , Statement.fromString "b:=5;"
+    , Statement.fromString "while 10 - a do begin a := a+1; b:=b+1; end"
+    , Statement.fromString "if a then skip; else a := a + 10;"
+    , Statement.fromString "a := a + 1;"
+    , Statement.fromString "n := n + 5;"
+    , Statement.fromString "write a;"
+    , Statement.fromString "write b;"
+    , Statement.fromString "write n;"
+    ]
 
 main :: IO ()
-main = do
--- main = print (spaces "     1abc")
--- main = print (chars 5 "1234567")
--- main = print ((require "abc") "abc123")
--- main = print ((spaces #- digit) "   122")
--- main = print ((spaces # digit) "   122")
--- main = print (((spaces # digit) #> (\(a, b) -> Parser.return a)) "   122")
--- main = print ((spaces # spaces) "   122")
--- main = print (require "abc" "abc123")
--- main = print (toString (fromString "2" :: Expr))
--- main = print (value (fromString "2") empty)
-    print (value (fromString "a/2") d)
+main = print $ exec whileLoop d [12]
