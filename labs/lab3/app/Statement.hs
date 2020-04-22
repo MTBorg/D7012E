@@ -64,24 +64,34 @@ exec (Read v : stmts) dict (i : ip) =
     exec stmts (Dictionary.insert (v, i) dict) ip
 exec [] _ _ = []
 
-shw :: Statement -> String
-shw (Assignment v e) = v ++ " := " ++ toString e
-shw (If cond thenStmt elseStmt) =
-    "if "
+indent :: Int -> String
+indent i = replicate i '\t'
+
+-- Takes an indentation level and a statement to print. The indentation level
+-- rules how many tabs will be printed.
+shw :: Int -> Statement -> String
+shw ind (Assignment v e) = indent ind ++ v ++ " := " ++ toString e
+shw ind (If cond thenStmt elseStmt) =
+    indent ind
+        ++ "if "
         ++ toString cond
-        ++ " then\n\t"
-        ++ toString thenStmt
-        ++ "\nelse\n\t"
-        ++ toString elseStmt
-shw (While cond stmt) = "while " ++ toString cond ++ "\n\t" ++ toString stmt
-shw (Begin stmts    ) = "begin" ++ printStmts stmts ++ "\n\tend"
+        ++ " then\n"
+        ++ shw (ind + 1) thenStmt
+        ++ "\n"
+        ++ indent ind
+        ++ "else\n"
+        ++ shw (ind + 1) elseStmt
+shw ind (While cond stmt) =
+    "while " ++ toString cond ++ "\n" ++ shw (ind + 1) stmt
+shw ind (Begin stmts) =
+    indent ind ++ "begin" ++ printStmts stmts ++ "\n" ++ indent ind ++ "end"
   where
-    printStmts (s : stmts) = "\n\t" ++ shw s ++ printStmts stmts
+    printStmts (s : stmts) = "\n" ++ shw (ind + 1) s ++ printStmts stmts
     printStmts []          = ""
-shw (Write v) = "write " ++ v ++ ";"
-shw Skip      = "skip;"
-shw (Read v)  = "read " ++ v ++ ";"
+shw ind (Write v) = indent ind ++ "write " ++ v ++ ";"
+shw ind Skip      = indent ind ++ "skip;"
+shw ind (Read v)  = indent ind ++ "read " ++ v ++ ";"
 
 instance Parse Statement where
     parse    = statement
-    toString = shw
+    toString = shw 0

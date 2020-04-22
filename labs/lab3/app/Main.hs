@@ -10,7 +10,7 @@ p =
     \ read n; \
     \ a:=2; \
     \ b:=5; \
-    \ while 10 - a do begin a := a+1; b:=b+1; end \
+    \ while 10 - a do begin if a then skip; else skip; b:=b+1; end \
     \ if a then skip; else a := a + 10; \
     \ a := a + 1; \
     \ n := n + 5; \
@@ -18,6 +18,20 @@ p =
     \ write b; \
     \ write n; \
 \ "
+-- p =
+--     Program.fromString
+--         "\ 
+--     \ read n; \
+--     \ a:=2; \
+--     \ b:=5; \
+--     \ while 10 - a do begin a := a+1; b:=b+1; end \
+--     \ if a then skip; else a := a + 10; \
+--     \ a := a + 1; \
+--     \ n := n + 5; \
+--     \ write a; \
+--     \ write b; \
+--     \ write n; \
+-- \ "
 
 
 main :: IO ()
