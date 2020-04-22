@@ -12,6 +12,7 @@ import           Prelude                 hiding ( return
 import           Parser                  hiding ( T )
 import qualified Dictionary
 import qualified Expr
+import           Debug.Trace
 type T = Statement
 data Statement =
     Assignment String Expr.T |
@@ -20,7 +21,8 @@ data Statement =
     While Expr.T Statement |
     Begin [Statement] |
     Read String |
-    Skip
+    Skip |
+    Repeat Statement Expr.T
     deriving Show
 
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> buildAss
@@ -41,8 +43,24 @@ if_ =
         >-> buildIf
     where buildIf ((cond, ifStmt), elseStmt) = If cond ifStmt elseStmt
 read = accept "read" -# word #- require ";" >-> Read
+repeat =
+    accept "repeat"
+        -#  statement
+        #-  require "until"
+        #   Expr.parse
+        #-  require ";"
+        >-> buildRepeat
+    where buildRepeat (stmts, e) = Repeat stmts e
 
-statement = assignment ! write ! if_ ! skip ! while ! begin ! Statement.read
+statement =
+    assignment
+        ! write
+        ! if_
+        ! skip
+        ! while
+        ! begin
+        ! Statement.read
+        ! Statement.repeat
 
 exec :: [T] -> Dictionary.T String Integer -> [Integer] -> [Integer]
 exec (Assignment v e : stmts) dict input = exec stmts newDict input
@@ -62,10 +80,19 @@ exec (Begin xs : stmts) dict input = exec (xs ++ stmts) dict input
 exec (Read  v  : stmts) _    []    = error "Missing input"
 exec (Read v : stmts) dict (i : ip) =
     exec stmts (Dictionary.insert (v, i) dict) ip
+exec (Repeat s cond : stmts) dict input = exec (s : condStmt : stmts)
+                                               dict
+                                               input
+    where condStmt = If cond Skip (Repeat s cond)
 exec [] _ _ = []
 
 indent :: Int -> String
 indent i = replicate i '\t'
+
+printStmtBlock :: Int -> [Statement.T] -> String
+printStmtBlock ind (s : stmts) =
+    "\n" ++ shw (ind + 1) s ++ printStmtBlock ind stmts
+printStmtBlock ind [] = ""
 
 -- Takes an indentation level and a statement to print. The indentation level
 -- rules how many tabs will be printed.
@@ -84,13 +111,21 @@ shw ind (If cond thenStmt elseStmt) =
 shw ind (While cond stmt) =
     "while " ++ toString cond ++ "\n" ++ shw (ind + 1) stmt
 shw ind (Begin stmts) =
-    indent ind ++ "begin" ++ printStmts stmts ++ "\n" ++ indent ind ++ "end"
-  where
-    printStmts (s : stmts) = "\n" ++ shw (ind + 1) s ++ printStmts stmts
-    printStmts []          = ""
+    indent ind
+        ++ "begin"
+        ++ printStmtBlock ind stmts
+        ++ "\n"
+        ++ indent ind
+        ++ "end"
 shw ind (Write v) = indent ind ++ "write " ++ v ++ ";"
 shw ind Skip      = indent ind ++ "skip;"
 shw ind (Read v)  = indent ind ++ "read " ++ v ++ ";"
+shw ind (Repeat stmts cond) =
+    indent ind
+        ++ "repeat "
+        ++ shw (ind + 1) stmts
+        ++ "\nuntil "
+        ++ toString cond
 
 instance Parse Statement where
     parse    = statement

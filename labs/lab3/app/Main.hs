@@ -2,37 +2,19 @@ module Main where
 
 import           Program
 
--- Should print 11, 13 and whatever you pass to it + 5
 p :: Program.T
 p =
     Program.fromString
-        "\ 
-    \ read n; \
-    \ a:=2; \
-    \ b:=5; \
-    \ while 10 - a do begin if a then skip; else skip; b:=b+1; end \
-    \ if a then skip; else a := a + 10; \
-    \ a := a + 1; \
-    \ n := n + 5; \
-    \ write a; \
-    \ write b; \
-    \ write n; \
-\ "
--- p =
---     Program.fromString
---         "\ 
---     \ read n; \
---     \ a:=2; \
---     \ b:=5; \
---     \ while 10 - a do begin a := a+1; b:=b+1; end \
---     \ if a then skip; else a := a + 10; \
---     \ a := a + 1; \
---     \ n := n + 5; \
---     \ write a; \
---     \ write b; \
---     \ write n; \
--- \ "
-
+        "\
+\ read n; \
+\ s:=0; \
+\ repeat \
+\     begin \
+\         s:=s+n; \
+\         n:=n-1; \
+\     end \
+\ until (0-n)+1; \
+\ write s; "
 
 main :: IO ()
-main = putStrLn $ Program.toString p
+main = print $ exec p [5]
