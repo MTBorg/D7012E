@@ -19,5 +19,6 @@ p =
     \ write n; \
 \ "
 
+
 main :: IO ()
-main = print $ Program.exec p [18]
+main = putStrLn $ Program.toString p

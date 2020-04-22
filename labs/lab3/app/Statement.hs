@@ -65,9 +65,23 @@ exec (Read v : stmts) dict (i : ip) =
 exec [] _ _ = []
 
 shw :: Statement -> String
-shw (Assignment s e) = "hello"
-shw (Write v       ) = "write " ++ v
+shw (Assignment v e) = v ++ " := " ++ toString e
+shw (If cond thenStmt elseStmt) =
+    "if "
+        ++ toString cond
+        ++ " then\n\t"
+        ++ toString thenStmt
+        ++ "\nelse\n\t"
+        ++ toString elseStmt
+shw (While cond stmt) = "while " ++ toString cond ++ "\n\t" ++ toString stmt
+shw (Begin stmts    ) = "begin" ++ printStmts stmts ++ "\n\tend"
+  where
+    printStmts (s : stmts) = "\n\t" ++ shw s ++ printStmts stmts
+    printStmts []          = ""
+shw (Write v) = "write " ++ v ++ ";"
+shw Skip      = "skip;"
+shw (Read v)  = "read " ++ v ++ ";"
 
 instance Parse Statement where
     parse    = statement
-    toString = error "Parse.Statment toString not implemented"
+    toString = shw
