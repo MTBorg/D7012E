@@ -1,3 +1,5 @@
+-- Martin Terneborg
+
 module Expr
     ( Expr
     , T
@@ -83,7 +85,7 @@ value (Var s) d = case Dictionary.lookup s d of
 value (Add e1 e2) d = value e1 d + value e2 d
 value (Sub e1 e2) d = value e1 d - value e2 d
 value (Mul e1 e2) d = value e1 d * value e2 d
-value (Div e1 e2) d = Prelude.div (value e1 d) (value e2 d)
+value (Div e1 e2) d = (value e1 d) `div` (value e2 d)
 
 instance Parse Expr where
     parse    = expr

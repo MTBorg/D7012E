@@ -1,3 +1,5 @@
+-- Martin Terneborg
+
 module Statement
     ( T
     , parse
@@ -32,7 +34,6 @@ skip = accept "skip;" >-> const Skip
 while = accept "while" -# Expr.parse #- require "do" # statement >-> buildWhile
     where buildWhile (e, s) = While e s
 begin = accept "begin" -# iter statement #- require "end" >-> Begin
- -- TODO: This should reject empty then/else statements
 if_ =
     accept "if "
         -#  Expr.parse
@@ -50,7 +51,7 @@ repeat =
         #   Expr.parse
         #-  require ";"
         >-> buildRepeat
-    where buildRepeat (stmts, e) = Repeat stmts e
+    where buildRepeat (stmt, e) = Repeat stmt e
 
 statement =
     assignment
@@ -89,11 +90,6 @@ exec [] _ _ = []
 indent :: Int -> String
 indent i = replicate i '\t'
 
-printStmtBlock :: Int -> [Statement.T] -> String
-printStmtBlock ind (s : stmts) =
-    "\n" ++ shw (ind + 1) s ++ printStmtBlock ind stmts
-printStmtBlock ind [] = ""
-
 -- Takes an indentation level and a statement to print. The indentation level
 -- rules how many tabs will be printed.
 shw :: Int -> Statement -> String
@@ -113,16 +109,22 @@ shw ind (While cond stmt) =
 shw ind (Begin stmts) =
     indent ind
         ++ "begin"
-        ++ printStmtBlock ind stmts
+        ++ printStmts stmts
         ++ "\n"
         ++ indent ind
         ++ "end"
+        ++ "\n"
+        ++ indent ind
+        ++ "end"
+  where
+    printStmts (s : stmts) = "\n" ++ shw (ind + 1) s ++ printStmts stmts
+    printStmts []          = ""
 shw ind (Write v) = indent ind ++ "write " ++ v ++ ";"
 shw ind Skip      = indent ind ++ "skip;"
 shw ind (Read v)  = indent ind ++ "read " ++ v ++ ";"
 shw ind (Repeat stmts cond) =
     indent ind
-        ++ "repeat "
+        ++ "repeat\n"
         ++ shw (ind + 1) stmts
         ++ "\nuntil "
         ++ toString cond

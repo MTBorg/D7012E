@@ -1,3 +1,5 @@
+-- Martin Terneborg
+
 module Parser
     ( module CoreParser
     , T
@@ -54,7 +56,7 @@ word :: Parser String
 word = token (letter # iter letter >-> cons)
 
 chars :: Int -> Parser String
-chars n = iterate char n  where
+chars = iterate char  where
     iterate m 0 = return []
     iterate m n = m # iterate m (n - 1) >-> cons
 
