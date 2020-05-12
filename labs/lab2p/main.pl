@@ -31,6 +31,7 @@ sub_lists(sublist(X, I, J, S), L) :- append(L1, L2, L), append(X, _, L2),
 sum_set([], 0).
 sum_set([I|T], S) :- sum_set(T, S1), S is I+S1.
 
+% Compute all possible (except for empty) sublists of a list L.
 all_sub_lists(L, R) :- findall(X, sub_lists(X, L), R).
 
 % Return only one of all possible sorting orders.
@@ -45,3 +46,13 @@ smallest_k_sets(L, K, S) :-
 	all_sub_lists(L, AllSubLists),
 	unique_sorted(AllSubLists, Sorted),
 	take(K, Sorted, S).
+
+print_set(sublist(X, I, J, S)) :- write(S), tab(4), write(I), tab(4), write(J), tab(4), write(X), nl.
+
+print_sets([]).
+print_sets([X|Xs]) :- print_set(X), print_sets(Xs).
+
+print_header() :- write(size), tab(4), write(i), tab(4), write(j), tab(4), write(sublist), nl.
+
+run([], _) :- write("Error: Empty input list").
+run(L, K) :- print_header, smallest_k_sets(L, K, Sets) ,print_sets(Sets).
