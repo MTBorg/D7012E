@@ -114,6 +114,11 @@ initialize(Board, 1) :- initBoard(Board).
 %%
 %% define terminal(State). 
 %   - true if State is a terminal   
+terminal(State) :-
+	moves(1, State, Moves1),
+	moves(2, State, Moves2),
+	Moves1 =:= [n],
+	Moves2 =:= [n].
 
 
 
