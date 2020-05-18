@@ -92,6 +92,16 @@ initialize(Board, 1) :- initBoard(Board).
 %% define winner(State,Plyr) here.  
 %     - returns winning player if State is a terminal position and
 %     Plyr has a higher score than the other player 
+winner(State, 1) :- 
+	terminal(State), 
+	score(State, 1, P1Score),
+	score(State, 2, P2Score),
+	P1Score > P2Score.
+winner(State, e) :- 
+	terminal(State), 
+	score(State, 1, P1Score),
+	score(State, 2, P2Score),
+	P2Score > P1Score.
 
 
 
@@ -320,3 +330,23 @@ setInList( [Element|RestList], [Element|NewRestList], Index, Value) :-
 	Index1 is Index-1, 
 	setInList( RestList, NewRestList, Index1, Value). 
  
+%
+% score(State, Plyr, Score): Calculates a player's score given the current 
+%		state.
+%
+score([], _, 0).
+score([Row|Rows], Plyr, Score) :-
+	scoreRow(Row, Plyr, S1),
+	score(Rows, Plyr, S2),
+	Score is S1+S2.
+
+%
+% scoreRow(State, Plyr, Score): Calculates a player's score of a row given the
+%		current state.
+scoreRow([], _, 0).
+scoreRow([.|Rest], 1, Score) :- scoreRow(Rest, 1, Score).
+scoreRow([2|Rest], 1, Score) :- scoreRow(Rest, 1, Score).
+scoreRow([1|Rest], 1, Score) :- scoreRow(Rest, 1, S), Score is 1+S.
+scoreRow([.|Rest], 2, Score) :- scoreRow(Rest, 2, Score).
+scoreRow([1|Rest], 2, Score) :- scoreRow(Rest, 2, Score).
+scoreRow([2|Rest], 2, Score) :- scoreRow(Rest, 2, S), Score is 1+S.
