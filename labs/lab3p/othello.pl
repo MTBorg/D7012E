@@ -171,7 +171,7 @@ moves(Plyr, State, [n]) :-
 	findall([X, Y], moveAllowed(Plyr, State, [X, Y]), MvList), 
 	length(MvList, L), L =:= 0.
 moves(Plyr, State, MvList) :- 
-	findall([X, Y], moveAllowed(Plyr, State, [X, Y]), M), i_sort(M, MvList).
+	setof([X, Y], moveAllowed(Plyr, State, [X, Y]), M), i_sort(M, MvList).
 
 % Insertion procedure for insertion sort. 
 i([X,Y], [], [[X,Y]]) :- !.
