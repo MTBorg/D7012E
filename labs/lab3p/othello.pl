@@ -345,6 +345,145 @@ checkNW(Plyr, State, [X,Y]) :-
 %   - given that Plyr makes Move in State, it determines NewState (i.e. the next 
 %     state) and NextPlayer (i.e. the next player who will move).
 %
+nextState(1, Move, State, NewState, 2) :- placeStone(1, State, Move, NewState).
+nextState(2, Move, State, NewState, 1) :- placeStone(2, State, Move, NewState).
+
+% This is damn mess
+turnStonesLeft(_, State, [X,Y], State) :- 
+	X1 is X-1,  
+	((X1 >= 0, squareEmpty(State, [X1, Y])) ; X1 < 0).
+turnStonesLeft(Plyr, State, [X,Y], NewState) :- 
+	X1 is X-1,  X >= 0,
+	playerInSquare(Plyr, State, [X1, Y]), 
+	set(State, NewState, [X, Y], Plyr).
+turnStonesLeft(Plyr, State, [X,Y], NewState) :- 
+	X1 is X-1, X >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y]), 
+	turnStonesLeft(Plyr, State, [X1, Y], N2),
+	set(N2, NewState, [X, Y], Plyr).
+
+turnStonesRight(_, State, [X,Y], State) :- 
+	X1 is X+1,  
+	((X1 < 6, squareEmpty(State, [X1, Y])) ; X1 >= 6), !.
+turnStonesRight(Plyr, State, [X,Y], NewState) :- 
+	X1 is X+1, X1 < 6,
+	playerInSquare(Plyr, State, [X1, Y]), 
+	set(State, NewState, [X, Y], Plyr), !.
+turnStonesRight(Plyr, State, [X,Y], NewState) :- 
+	X1 is X+1,  X1 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y]), 
+	turnStonesRight(Plyr, State, [X1, Y], N2),
+	set(N2, NewState, [X, Y], Plyr).
+
+turnStonesUp(_, State, [X,Y], State) :- 
+	Y1 is Y-1,  
+	((Y1 >= 0, squareEmpty(State, [X, Y1])) ; Y1 < 0).
+turnStonesUp(Plyr, State, [X,Y], NewState) :- 
+	Y1 is Y-1, Y1 >= 0,
+	playerInSquare(Plyr, State, [X, Y1]), 
+	set(State, NewState, [X, Y], Plyr).
+turnStonesUp(Plyr, State, [X,Y], NewState) :- 
+	Y1 is Y-1,  Y1 >= 0,
+	otherPlayerInSquare(Plyr, State, [X, Y1]), 
+	turnStonesUp(Plyr, State, [X, Y1], N2),
+	set(N2, NewState, [X, Y], Plyr).
+
+turnStonesDown(_, State, [X,Y], State) :- 
+	Y1 is Y+1,  
+	((Y1 < 6, squareEmpty(State, [X, Y1])) ; Y1 >= 6).
+turnStonesDown(Plyr, State, [X,Y], NewState) :- 
+	Y1 is Y+1, Y1 < 6,
+	playerInSquare(Plyr, State, [X, Y1]), 
+	set(State, NewState, [X, Y], Plyr).
+turnStonesDown(Plyr, State, [X,Y], NewState) :- 
+	Y1 is Y+1,  Y1 < 6,
+	otherPlayerInSquare(Plyr, State, [X, Y1]), 
+	turnStonesDown(Plyr, State, [X, Y1], N2),
+	set(N2, NewState, [X, Y], Plyr).
+
+turnStonesNE(_, State, [X,Y], State) :- 
+	X1 is X+1,
+	Y1 is Y-1,  
+	((Y1 >= 0, X1 < 6, squareEmpty(State, [X1, Y1])) ; Y1 < 0 ; X1 >= 6).
+turnStonesNE(Plyr, State, [X,Y], NewState) :- 
+	X1 is X+1, X1 < 6,
+	Y1 is Y-1, Y1 >= 0,
+	playerInSquare(Plyr, State, [X1, Y1]), 
+	set(State, NewState, [X, Y], Plyr).
+turnStonesNE(Plyr, State, [X,Y], NewState) :- 
+	X1 is X+1, X1 < 6,
+	Y1 is Y-1,Y1 >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]), 
+	turnStonesNE(Plyr, State, [X1, Y1], N2),
+	set(N2, NewState, [X, Y], Plyr).
+
+turnStonesSE(_, State, [X,Y], State) :- 
+	X1 is X+1,
+	Y1 is Y+1,  
+	((Y1 < 6, X1 < 6, squareEmpty(State, [X1, Y1])) ; Y1 >= 6; X1 >= 6).
+turnStonesSE(Plyr, State, [X,Y], NewState) :- 
+	X1 is X+1, X1 < 6,
+	Y1 is Y+1, Y1 < 6,
+	playerInSquare(Plyr, State, [X1, Y1]), 
+	set(State, NewState, [X, Y], Plyr).
+turnStonesSE(Plyr, State, [X,Y], NewState) :- 
+	X1 is X+1, X1 < 6,
+	Y1 is Y+1, Y1 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]), 
+	turnStonesSE(Plyr, State, [X1, Y1], N2),
+	set(N2, NewState, [X, Y], Plyr).
+
+turnStonesSW(_, State, [X,Y], State) :- 
+	X1 is X-1,
+	Y1 is Y+1,  
+	((Y1 < 6, X1 >= 0, squareEmpty(State, [X1, Y1])) ; Y1 >= 6; X1 < 0).
+turnStonesSW(Plyr, State, [X,Y], NewState) :- 
+	X1 is X-1, X1 >= 0,
+	Y1 is Y+1, Y1 < 6,
+	playerInSquare(Plyr, State, [X1, Y1]), 
+	set(State, NewState, [X, Y], Plyr).
+turnStonesSW(Plyr, State, [X,Y], NewState) :- 
+	X1 is X-1, X1 >= 0,
+	Y1 is Y+1, Y1 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]), 
+	turnStonesSW(Plyr, State, [X1, Y1], N2),
+	set(N2, NewState, [X, Y], Plyr).
+
+turnStonesNW(_, State, [X,Y], State) :- 
+	X1 is X-1,
+	Y1 is Y-1,  
+	((Y1 >= 0, X1 >= 0, squareEmpty(State, [X1, Y1])) ; Y1 < 0; X1 < 0).
+turnStonesNW(Plyr, State, [X,Y], NewState) :- 
+	X1 is X-1, X1 >= 0,
+	Y1 is Y-1, Y1 >= 0,
+	playerInSquare(Plyr, State, [X1, Y1]), 
+	set(State, NewState, [X, Y], Plyr).
+turnStonesNW(Plyr, State, [X,Y], NewState) :- 
+	X1 is X-1, X1 >= 0,
+	Y1 is Y-1, Y1 >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]), 
+	turnStonesNW(Plyr, State, [X1, Y1], N2),
+	set(N2, NewState, [X, Y], Plyr).
+
+turnStonesDiagonally(Plyr, State, [X,Y], NewState) :-
+	turnStonesNE(Plyr, State, [X,Y], S1),
+	turnStonesSE(Plyr, S1, [X,Y], S2),
+	turnStonesSW(Plyr, S2, [X,Y], S3),
+	turnStonesNW(Plyr, S3, [X,Y], NewState).
+
+turnStonesHorizontal(Plyr, State, [X,Y], NewState) :- 
+	turnStonesRight(Plyr, State, [X,Y], S1),
+	turnStonesLeft(Plyr, S1, [X,Y], NewState).
+
+turnStonesVertical(Plyr, State, [X,Y], NewState) :- 
+	turnStonesDown(Plyr, State, [X,Y], S1),
+	turnStonesUp(Plyr, S1, [X,Y], NewState).
+
+placeStone(Plyr, State, [X,Y], NewState) :- 
+	validMove(Plyr, State, [X,Y]), 		
+	turnStonesHorizontal(Plyr, State, [X,Y], S1),
+	turnStonesVertical(Plyr, S1, [X,Y], S2),
+	turnStonesDiagonally(Plyr, S2, [X,Y], NewState).
 
 
 
