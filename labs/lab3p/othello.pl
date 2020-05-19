@@ -113,6 +113,11 @@ winner(State, e) :-
 %%
 %% define tie(State) here. 
 %    - true if terminal State is a "tie" (no winner) 
+tie(State) :- 
+	terminal(State), 
+	score(State, 1, P1Score), 
+	score(State, 2, P2Score), 
+	P1Score =:= P2Score.
 
 
 
