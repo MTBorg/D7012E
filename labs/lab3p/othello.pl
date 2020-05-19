@@ -167,8 +167,173 @@ printList([H | L]) :-
 %% define moves(Plyr,State,MvList). 
 %   - returns list MvList of all legal moves Plyr can make in State
 %
+moves(Plyr, State, [n]) :- 
+	findall([X, Y], moveAllowed(Plyr, State, [X, Y]), MvList), 
+	length(MvList, L), L =:= 0.
+moves(Plyr, State, MvList) :- 
+	findall([X, Y], moveAllowed(Plyr, State, [X, Y]), M), i_sort(M, MvList).
 
+% Insertion procedure for insertion sort. 
+i([X,Y], [], [[X,Y]]) :- !.
+i(
+	[X1,Y1],
+	[[X2, Y2]|T],
+	[[X1, Y1],[X2, Y2]|T]
+	) :-  X1 < X2, !.
+i(
+	[X, Y1],
+	[[X, Y2] | T],
+	[[X, Y1] , [X, Y2] | T]) :- Y1 < Y2, !.
+i([X1, Y1], [[X2, Y2] | T], [[X2, Y2]|T1]) :- i([X1, Y1], T, T1).
 
+% Insertion sort
+i_sort([], []).
+i_sort([M|T], T2) :- i_sort(T, T1), i(M, T1, T2).
+
+% squareEmpty(State, [X,y]): Check if a square is empty (contains '.')
+squareEmpty(State, [X,Y]) :- get(State, [X, Y], S), S == '.'.
+
+% moveAllowed(Plyr, State, [X,Y]): Check if a move is legal
+moveAllowed(Plyr, State, [X,Y]) :- 
+	squareEmpty(State, [X, Y]), checkLeft(Plyr, State, [X, Y]).
+moveAllowed(Plyr, State, [X,Y]) :- 
+	squareEmpty(State, [X, Y]), checkRight(Plyr, State, [X, Y]).
+moveAllowed(Plyr, State, [X,Y]) :- 
+	squareEmpty(State, [X, Y]), checkUp(Plyr, State, [X, Y]).
+moveAllowed(Plyr, State, [X,Y]) :- 
+	squareEmpty(State, [X, Y]), checkDown(Plyr, State, [X, Y]).
+moveAllowed(Plyr, State, [X,Y]) :- 
+	squareEmpty(State, [X, Y]), checkNE(Plyr, State, [X, Y]).
+moveAllowed(Plyr, State, [X,Y]) :- 
+	squareEmpty(State, [X, Y]), checkNW(Plyr, State, [X, Y]).
+moveAllowed(Plyr, State, [X,Y]) :- 
+	squareEmpty(State, [X, Y]), checkSE(Plyr, State, [X, Y]).
+moveAllowed(Plyr, State, [X,Y]) :- 
+	squareEmpty(State, [X, Y]), checkSW(Plyr, State, [X, Y]).
+
+% playerInSquare(Plyr, State, [X, Y]): 
+%	Check if the player is in a square
+playerInSquare(Plyr,State,[X,Y]) :- 
+	get(State, [X, Y], S),
+	S == Plyr.
+
+% otherPlayerInSquare(Plyr, State, [X, Y]): 
+%	Check if the other player is in a square
+otherPlayerInSquare(Plyr, State, [X, Y]) :-
+	get(State, [X, Y], S),
+	S \= Plyr, S \= '.'.
+
+% checkLeft(Plyr, State, [X,Y])
+% Check if placing a stone in [X,Y] turns any stone to the left
+checkLeft(Plyr, State, [X,Y]) :- 
+	X1 is X-1,  X1 >= 0,
+	X2 is X-2,  X2 >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y]),
+	playerInSquare(Plyr, State, [X2, Y]).
+checkLeft(Plyr, State, [X,Y]) :- 
+	X1 is X-1, X1 >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y]),
+	checkLeft(Plyr, State, [X1, Y]).
+
+% checkDown(Plyr, State, [X,Y])
+% Check if placing a stone in [X,Y] turns any stone below
+checkDown(Plyr, State, [X,Y]) :- 
+	Y1 is Y+1,  Y1 < 6,
+	Y2 is Y+2,  Y2 < 6,
+	otherPlayerInSquare(Plyr, State, [X, Y1]),
+	playerInSquare(Plyr, State, [X, Y2]).
+checkDown(Plyr, State, [X,Y]) :- 
+	Y1 is Y+1, Y1 < 6,
+	otherPlayerInSquare(Plyr, State, [X, Y1]),
+	checkDown(Plyr, State, [X, Y1]).
+
+% checkUp(Plyr, State, [X,Y])
+% Check if placing a stone in [X,Y] turns any stone above
+checkUp(Plyr, State, [X,Y]) :- 
+	Y1 is Y-1,  Y1 >= 0,
+	Y2 is Y-2,  Y2 >= 0,
+	otherPlayerInSquare(Plyr, State, [X, Y1]),
+	playerInSquare(Plyr, State, [X, Y2]).
+checkUp(Plyr, State, [X,Y]) :- 
+	Y1 is Y-1, Y1 >= 0,
+	otherPlayerInSquare(Plyr, State, [X, Y1]),
+	checkUp(Plyr, State, [X, Y1]).
+
+% checkRight(Plyr, State, [X,Y])
+% Check if placing a stone in [X,Y] turns any stone to the right
+checkRight(Plyr, State, [X,Y]) :- 
+	X1 is X+1,  X1 < 6,
+	X2 is X+2,  X2 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y]),
+	playerInSquare(Plyr, State, [X2, Y]).
+checkRight(Plyr, State, [X,Y]) :- 
+	X1 is X+1, X1 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y]),
+	checkRight(Plyr, State, [X1, Y]).
+
+% checkNE(Plyr, State, [X,Y])
+% Check if placing a stone in [X,Y] turns any stone in the north eastern 
+% direction
+checkNE(Plyr, State, [X,Y]) :- 
+	X1 is X+1,  X1 < 6,
+	X2 is X+2,  X2 < 6,
+	Y1 is Y-1,  Y1 >= 0,
+	Y2 is Y-2,  Y2 >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]),
+	playerInSquare(Plyr, State, [X2, Y2]).
+checkNE(Plyr, State, [X,Y]) :- 
+	X1 is X+1, X1 < 6,
+	Y1 is Y-1, Y1 >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]),
+	checkNE(Plyr, State, [X1, Y1]).
+
+% checkSE(Plyr, State, [X,Y])
+% Check if placing a stone in [X,Y] turns any stone in the south eastern 
+% direction
+checkSE(Plyr, State, [X,Y]) :- 
+	X1 is X+1,  X1 < 6,
+	X2 is X+2,  X2 < 6,
+	Y1 is Y+1,  Y1 < 6,
+	Y2 is Y+2,  Y2 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]),
+	playerInSquare(Plyr, State, [X2, Y2]).
+checkSE(Plyr, State, [X,Y]) :- 
+	X1 is X+1, X1 < 6,
+	Y1 is Y+1, Y1 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]),
+	checkSE(Plyr, State, [X1, Y1]).
+
+% checkSW(Plyr, State, [X,Y])
+% Check if placing a stone in [X,Y] turns any stone in the south western 
+% direction
+checkSW(Plyr, State, [X,Y]) :- 
+	X1 is X-1,  X1 >= 0,
+	X2 is X-2,  X2 >= 0,
+	Y1 is Y+1,  Y1 < 6,
+	Y2 is Y+2,  Y2 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]),
+	playerInSquare(Plyr, State, [X2, Y2]).
+checkSW(Plyr, State, [X,Y]) :- 
+	X1 is X-1, X1 >= 0,
+	Y1 is Y+1, Y1 < 6,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]),
+	checkSW(Plyr, State, [X1, Y1]).
+
+% checkNW(Plyr, State, [X,Y])
+% Check if placing a stone in [X,Y] turns any stone in the north western 
+% direction
+checkNW(Plyr, State, [X,Y]) :- 
+	X1 is X-1,  X1 >= 0,
+	X2 is X-2,  X2 >= 0,
+	Y1 is Y-1,  Y1 >= 0,
+	Y2 is Y-2,  Y2 >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]),
+	playerInSquare(Plyr, State, [X2, Y2]).
+checkNW(Plyr, State, [X,Y]) :- 
+	X1 is X-1, X1 >= 0,
+	Y1 is Y-1, Y1 >= 0,
+	otherPlayerInSquare(Plyr, State, [X1, Y1]),
+	checkNW(Plyr, State, [X1, Y1]).
 
 
 
