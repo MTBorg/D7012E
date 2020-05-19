@@ -356,6 +356,9 @@ checkNW(Plyr, State, [X,Y]) :-
 %% 
 %% define validmove(Plyr,State,Proposed). 
 %   - true if Proposed move by Plyr is valid at State.
+validMove(Plyr, State, Proposed) :- 
+	moves(Plyr, State, MvList), 
+	member(Proposed, MvList).
 
 
 
