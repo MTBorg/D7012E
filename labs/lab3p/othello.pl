@@ -14,6 +14,7 @@
 :- ensure_loaded('play.pl').
 % :- ensure_loaded('stupid.pl').
 :- ensure_loaded('rndBoard.pl').
+:- ensure_loaded("tests.pl").
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
