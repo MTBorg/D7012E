@@ -516,6 +516,7 @@ validmove(Plyr, State, Proposed) :-
 %   NOTE2. If State is not terminal h should be an estimate of
 %          the value of state (see handout on ideas about
 %          good heuristics.
+h(State, Val) :- score(State, 1, S1), score(State, 2, S2), Val is S1 - S2.
 
 
 
@@ -528,6 +529,7 @@ validmove(Plyr, State, Proposed) :-
 %% define lowerBound(B).  
 %   - returns a value B that is less than the actual or heuristic value
 %     of all states.
+lowerBound(-1).
 
 
 
@@ -540,6 +542,7 @@ validmove(Plyr, State, Proposed) :-
 %% define upperBound(B). 
 %   - returns a value B that is greater than the actual or heuristic value
 %     of all states.
+upperBound(37).
 
 
 
