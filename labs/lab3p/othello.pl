@@ -394,7 +394,7 @@ doTurnDown(Plyr, State, [X,Y], NewState) :-
 	set(State, S1, [X,Y], Plyr), doTurnDown(Plyr, S1, [X, Y1], NewState).
 
 turnStonesNE(Plyr, State, [X,Y], NewState) :-
-	checkNW(Plyr, State, [X,Y]), doTurnNE(Plyr, State, [X,Y], NewState).
+	checkNE(Plyr, State, [X,Y]), doTurnNE(Plyr, State, [X,Y], NewState).
 turnStonesNE(_, State, _, State).
 
 doTurnNE(Plyr, State, [X,Y], State) :-
