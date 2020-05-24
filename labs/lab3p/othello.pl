@@ -353,6 +353,16 @@ nextState(2, Move, State, NewState, 1) :- placeStone(2, State, Move, NewState).
 nextState(1, n, State, State, 2).
 nextState(2, n, State, State, 1).
 
+%turnStones<DIRECTION>(Plyr, State, [X,Y], NewState).
+% Tries to turn as many stones as possible in DIRECTION originating at
+% coordinate [X,Y] as player Plyr. 
+% Will always succeed, even when no stones are turnable (in this case NewState
+% will equal State).
+
+% doTurn<DIRECTION>(Plyr, State, [X,Y], NewState).
+% Does the actual turning of the stones.
+% This assumes that check<DIRECTION> has been called beforehand.
+
 turnStonesLeft(Plyr, State, [X,Y], NewState) :-
 	checkLeft(Plyr, State, [X,Y]), doTurnLeft(Plyr, State, [X,Y], NewState).
 turnStonesLeft(_, State, _, State).
@@ -449,20 +459,32 @@ doTurnNW(Plyr, State, [X,Y], NewState) :-
 	X1 is X - 1, Y1 is Y - 1,
 	set(State, S1, [X,Y], Plyr), doTurnNW(Plyr, S1, [X1, Y1], NewState).
 
+% turnStonesHorizontal(Plyr, State, [X,Y], NewState) 
+% Tries to turn stones in directions NE, SE, SW and NW as player Plyr 
+% originating at coordinate [X,Y]
 turnStonesDiagonally(Plyr, State, [X,Y], NewState) :-
 	turnStonesNE(Plyr, State, [X,Y], S1),
 	turnStonesSE(Plyr, S1, [X,Y], S2),
 	turnStonesSW(Plyr, S2, [X,Y], S3),
 	turnStonesNW(Plyr, S3, [X,Y], NewState).
 
+% turnStonesHorizontal(Plyr, State, [X,Y], NewState) 
+% Tries to turn stones in direction left and right as player Plyr originating 
+% at coordinate [X,Y]
 turnStonesHorizontal(Plyr, State, [X,Y], NewState) :- 
 	turnStonesRight(Plyr, State, [X,Y], S1),
 	turnStonesLeft(Plyr, S1, [X,Y], NewState).
 
+
+% turnStonesVertical(Plyr, State, [X,Y], NewState) 
+% Tries to turn stones in direction up and down as player Plyr originating at 
+% coordinate [X,Y]
 turnStonesVertical(Plyr, State, [X,Y], NewState) :- 
 	turnStonesDown(Plyr, State, [X,Y], S1),
 	turnStonesUp(Plyr, S1, [X,Y], NewState).
 
+% placeStone(Plyr, State, [X,Y], NewState).
+% Tries to place a stone at location [X,Y] as player Plyr.
 placeStone(Plyr, State, [X,Y], NewState) :- 
 	validmove(Plyr, State, [X,Y]),
 	turnStonesHorizontal(Plyr, State, [X,Y], S1),
