@@ -99,12 +99,12 @@ winner(State, 1) :-
 	terminal(State), 
 	score(State, 1, P1Score),
 	score(State, 2, P2Score),
-	P1Score > P2Score.
+	P1Score < P2Score.
 winner(State, 2) :- 
 	terminal(State), 
 	score(State, 1, P1Score),
 	score(State, 2, P2Score),
-	P2Score > P1Score.
+	P2Score < P1Score.
 
 
 
@@ -482,7 +482,7 @@ validmove(Plyr, State, Proposed) :-
 %   NOTE2. If State is not terminal h should be an estimate of
 %          the value of state (see handout on ideas about
 %          good heuristics.
-h(State, Val) :- score(State, 1, S1), score(State, 2, S2), Val is S1 - S2.
+h(State, Val) :- score(State, 1, S1), score(State, 2, S2), Val is S2 - S1.
 
 
 
