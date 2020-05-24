@@ -99,7 +99,7 @@ winner(State, 1) :-
 	score(State, 1, P1Score),
 	score(State, 2, P2Score),
 	P1Score > P2Score.
-winner(State, e) :- 
+winner(State, 2) :- 
 	terminal(State), 
 	score(State, 1, P1Score),
 	score(State, 2, P2Score),
