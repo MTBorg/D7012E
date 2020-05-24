@@ -13,6 +13,7 @@
 %do not chagne the follwoing line!
 :- ensure_loaded('play.pl').
 % :- ensure_loaded('stupid.pl').
+:- ensure_loaded('rndBoard.pl').
 
 
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
