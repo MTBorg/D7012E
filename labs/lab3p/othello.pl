@@ -347,6 +347,8 @@ checkNW(Plyr, State, [X,Y]) :-
 %
 nextState(1, Move, State, NewState, 2) :- placeStone(1, State, Move, NewState).
 nextState(2, Move, State, NewState, 1) :- placeStone(2, State, Move, NewState).
+nextState(1, n, State, State, 2).
+nextState(2, n, State, State, 1).
 
 % This is damn mess
 turnStonesLeft(_, State, [X,Y], State) :- 
