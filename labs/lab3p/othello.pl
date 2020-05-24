@@ -357,8 +357,10 @@ turnStonesLeft(Plyr, State, [X,Y], NewState) :-
 	checkLeft(Plyr, State, [X,Y]), doTurnLeft(Plyr, State, [X,Y], NewState).
 turnStonesLeft(_, State, _, State).
 
-doTurnLeft(Plyr, State, [X,Y], State) :-
-	playerInSquare(Plyr, State, [X,Y]).
+doTurnLeft(Plyr, State, [X,Y], NewState) :-
+	X1 is X - 1,
+	playerInSquare(Plyr, State, [X1,Y]),
+	set(State, NewState, [X,Y], Plyr).
 doTurnLeft(Plyr, State, [X,Y], NewState) :-
 	X1 is X - 1,
 	set(State, S1, [X,Y], Plyr), doTurnLeft(Plyr, S1, [X1, Y], NewState).
@@ -367,8 +369,10 @@ turnStonesRight(Plyr, State, [X,Y], NewState) :-
 	checkRight(Plyr, State, [X,Y]), doTurnRight(Plyr, State, [X,Y], NewState).
 turnStonesRight(_, State, _, State).
 
-doTurnRight(Plyr, State, [X,Y], State) :-
-	playerInSquare(Plyr, State, [X,Y]).
+doTurnRight(Plyr, State, [X,Y], NewState) :-
+	X1 is X + 1,
+	playerInSquare(Plyr, State, [X1,Y]),
+	set(State, NewState, [X,Y], Plyr).
 doTurnRight(Plyr, State, [X,Y], NewState) :-
 	X1 is X + 1,
 	set(State, S1, [X,Y], Plyr), doTurnRight(Plyr, S1, [X1, Y], NewState).
@@ -377,8 +381,10 @@ turnStonesUp(Plyr, State, [X,Y], NewState) :-
 	checkUp(Plyr, State, [X,Y]), doTurnUp(Plyr, State, [X,Y], NewState).
 turnStonesUp(_, State, _, State).
 
-doTurnUp(Plyr, State, [X,Y], State) :-
-	playerInSquare(Plyr, State, [X,Y]).
+doTurnUp(Plyr, State, [X,Y], NewState) :-
+	Y1 is Y - 1,
+	playerInSquare(Plyr, State, [X,Y1]),
+	set(State, NewState, [X,Y], Plyr).
 doTurnUp(Plyr, State, [X,Y], NewState) :-
 	Y1 is Y - 1,
 	set(State, S1, [X,Y], Plyr), doTurnUp(Plyr, S1, [X, Y1], NewState).
@@ -387,8 +393,10 @@ turnStonesDown(Plyr, State, [X,Y], NewState) :-
 	checkDown(Plyr, State, [X,Y]), doTurnDown(Plyr, State, [X,Y], NewState).
 turnStonesDown(_, State, _, State).
 
-doTurnDown(Plyr, State, [X,Y], State) :-
-	playerInSquare(Plyr, State, [X,Y]).
+doTurnDown(Plyr, State, [X,Y], NewState) :-
+	Y1 is Y + 1,
+	playerInSquare(Plyr, State, [X,Y1]),
+	set(State, NewState, [X,Y], Plyr).
 doTurnDown(Plyr, State, [X,Y], NewState) :-
 	Y1 is Y + 1,
 	set(State, S1, [X,Y], Plyr), doTurnDown(Plyr, S1, [X, Y1], NewState).
@@ -397,8 +405,10 @@ turnStonesNE(Plyr, State, [X,Y], NewState) :-
 	checkNE(Plyr, State, [X,Y]), doTurnNE(Plyr, State, [X,Y], NewState).
 turnStonesNE(_, State, _, State).
 
-doTurnNE(Plyr, State, [X,Y], State) :-
-	playerInSquare(Plyr, State, [X,Y]).
+doTurnNE(Plyr, State, [X,Y], NewState) :-
+	X1 is X + 1, Y1 is Y - 1,
+	playerInSquare(Plyr, State, [X1,Y1]),
+	set(State, NewState, [X,Y], Plyr).
 doTurnNE(Plyr, State, [X,Y], NewState) :-
 	X1 is X + 1, Y1 is Y - 1,
 	set(State, S1, [X,Y], Plyr), doTurnNE(Plyr, S1, [X1, Y1], NewState).
@@ -407,8 +417,10 @@ turnStonesSE(Plyr, State, [X,Y], NewState) :-
 	checkSE(Plyr, State, [X,Y]), doTurnSE(Plyr, State, [X,Y], NewState).
 turnStonesSE(_, State, _, State).
 
-doTurnSE(Plyr, State, [X,Y], State) :-
-	playerInSquare(Plyr, State, [X,Y]).
+doTurnSE(Plyr, State, [X,Y], NewState) :-
+	X1 is X + 1, Y1 is Y + 1,
+	playerInSquare(Plyr, State, [X1,Y1]),
+	set(State, NewState, [X,Y], Plyr).
 doTurnSE(Plyr, State, [X,Y], NewState) :-
 	X1 is X + 1, Y1 is Y + 1,
 	set(State, S1, [X,Y], Plyr), doTurnSE(Plyr, S1, [X1, Y1], NewState).
@@ -417,8 +429,10 @@ turnStonesSW(Plyr, State, [X,Y], NewState) :-
 	checkSW(Plyr, State, [X,Y]), doTurnSW(Plyr, State, [X,Y], NewState).
 turnStonesSW(_, State, _, State).
 
-doTurnSW(Plyr, State, [X,Y], State) :-
-	playerInSquare(Plyr, State, [X,Y]).
+doTurnSW(Plyr, State, [X,Y], NewState) :-
+	X1 is X - 1, Y1 is Y + 1,
+	playerInSquare(Plyr, State, [X1,Y1]),
+	set(State, NewState, [X,Y], Plyr).
 doTurnSW(Plyr, State, [X,Y], NewState) :-
 	X1 is X - 1, Y1 is Y + 1,
 	set(State, S1, [X,Y], Plyr), doTurnSW(Plyr, S1, [X1, Y1], NewState).
@@ -427,8 +441,10 @@ turnStonesNW(Plyr, State, [X,Y], NewState) :-
 	checkNW(Plyr, State, [X,Y]), doTurnNW(Plyr, State, [X,Y], NewState).
 turnStonesNW(_, State, _, State).
 
-doTurnNW(Plyr, State, [X,Y], State) :-
-	playerInSquare(Plyr, State, [X,Y]).
+doTurnNW(Plyr, State, [X,Y], NewState) :-
+	X1 is X - 1, Y1 is Y - 1,
+	playerInSquare(Plyr, State, [X1,Y1]),
+	set(State, NewState, [X,Y], Plyr).
 doTurnNW(Plyr, State, [X,Y], NewState) :-
 	X1 is X - 1, Y1 is Y - 1,
 	set(State, S1, [X,Y], Plyr), doTurnNW(Plyr, S1, [X1, Y1], NewState).
