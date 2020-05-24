@@ -482,7 +482,7 @@ turnStonesVertical(Plyr, State, [X,Y], NewState) :-
 	turnStonesUp(Plyr, S1, [X,Y], NewState).
 
 placeStone(Plyr, State, [X,Y], NewState) :- 
-	validMove(Plyr, State, [X,Y]), 		
+	validmove(Plyr, State, [X,Y]),
 	turnStonesHorizontal(Plyr, State, [X,Y], S1),
 	turnStonesVertical(Plyr, S1, [X,Y], S2),
 	turnStonesDiagonally(Plyr, S2, [X,Y], NewState).
@@ -497,7 +497,7 @@ placeStone(Plyr, State, [X,Y], NewState) :-
 %% 
 %% define validmove(Plyr,State,Proposed). 
 %   - true if Proposed move by Plyr is valid at State.
-validMove(Plyr, State, Proposed) :- 
+validmove(Plyr, State, Proposed) :-
 	moves(Plyr, State, MvList), 
 	member(Proposed, MvList).
 
